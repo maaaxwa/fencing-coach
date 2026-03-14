@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id               Int      @id @default(1)
+  name             String
+  weapon           String   @default("epee")
+  experienceYears  Int      @default(0)
+  experienceMonths Int      @default(0)
+  createdAt        DateTime @default(now())
+}
+
+model ClassNote {
+  id          Int      @id @default(autoincrement())
+  content     String
+  sessionDate DateTime
+  analysis    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Video {
+  id            Int      @id @default(autoincrement())
+  filename      String
+  filepath      String
+  boutDate      DateTime
+  analysis      String?
+  thumbnailPath String?
+  createdAt     DateTime @default(now())
+}
+
+model CoachingReport {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+}
