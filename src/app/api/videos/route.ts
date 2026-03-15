@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { extractThumbnail } from '@/lib/video'
+import { extractThumbnail, extractFrames, framePathToBase64, cleanupFrames } from '@/lib/video'
+import { analyzeVideoFrames } from '@/lib/claude'
 import path from 'path'
 import fs from 'fs'
 
@@ -54,6 +55,33 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     console.error('Thumbnail extraction failed:', e)
   }
+
+  // Kick off analysis in the background
+  void (async () => {
+    try {
+      const profile = await prisma.profile.findUnique({ where: { id: 1 } })
+      if (!profile) return
+      const framePaths = await extractFrames(filepath, video.id)
+      const base64Frames = framePaths.map(framePathToBase64)
+      const analysis = await analyzeVideoFrames(
+        {
+          name: profile.name,
+          weapon: profile.weapon,
+          experienceYears: profile.experienceYears,
+          experienceMonths: profile.experienceMonths,
+        },
+        base64Frames,
+        fencerDescription
+      )
+      cleanupFrames(video.id)
+      await prisma.video.update({
+        where: { id: video.id },
+        data: { analysis: JSON.stringify(analysis) },
+      })
+    } catch (e) {
+      console.error('Background video analysis failed:', e)
+    }
+  })()
 
   const updated = await prisma.video.findUnique({ where: { id: video.id } })
   return NextResponse.json(updated, { status: 201 })

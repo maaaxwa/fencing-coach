@@ -40,6 +40,20 @@ export default function NoteDetailPage() {
       })
   }, [params.id])
 
+  // Poll until analysis arrives (auto-triggered on upload)
+  useEffect(() => {
+    if (!note || note.analysis) return
+    const interval = setInterval(async () => {
+      const res = await fetch(`/api/notes/${params.id}`)
+      const n = await res.json()
+      if (n.analysis) {
+        setNote(n)
+        setAnalysis(JSON.parse(n.analysis))
+      }
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [note, params.id])
+
   async function handleAnalyze() {
     setAnalyzing(true)
     setError('')
@@ -79,17 +93,15 @@ export default function NoteDetailPage() {
         </div>
         <button
           onClick={handleAnalyze}
-          disabled={analyzing}
+          disabled={analyzing || !analysis}
           className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
         >
-          {analyzing ? (
+          {analyzing || !analysis ? (
             <>
               <span className="animate-spin">⟳</span> Analyzing...
             </>
-          ) : analysis ? (
-            '↻ Re-analyze'
           ) : (
-            '✦ Analyze with AI'
+            '↻ Re-analyze'
           )}
         </button>
       </div>
@@ -127,7 +139,7 @@ export default function NoteDetailPage() {
         </div>
       )}
 
-      {analyzing && (
+      {(analyzing || !analysis) && (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
           <div className="text-gray-400 text-sm">
             Claude is analyzing your training notes...

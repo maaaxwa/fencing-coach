@@ -28,6 +28,14 @@ export default function VideosPage() {
     fetchVideos()
   }, [])
 
+  // Poll while any video is still being analyzed
+  useEffect(() => {
+    const hasUnanalyzed = videos.some((v) => !v.analysis)
+    if (!hasUnanalyzed) return
+    const interval = setInterval(fetchVideos, 5000)
+    return () => clearInterval(interval)
+  }, [videos])
+
   async function fetchVideos() {
     const res = await fetch('/api/videos')
     setVideos(await res.json())
@@ -173,8 +181,8 @@ export default function VideosPage() {
                       Analyzed
                     </span>
                   ) : (
-                    <span className="absolute top-2 right-2 text-xs text-gray-400 bg-black/40 backdrop-blur px-1.5 py-0.5 rounded">
-                      Not analyzed
+                    <span className="absolute top-2 right-2 text-xs text-yellow-400 bg-black/40 backdrop-blur px-1.5 py-0.5 rounded">
+                      Analyzing...
                     </span>
                   )}
                 </div>

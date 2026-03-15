@@ -23,6 +23,14 @@ export default function NotesPage() {
     fetchNotes()
   }, [])
 
+  // Poll while any note is still being analyzed
+  useEffect(() => {
+    const hasUnanalyzed = notes.some((n) => !n.analysis)
+    if (!hasUnanalyzed) return
+    const interval = setInterval(fetchNotes, 5000)
+    return () => clearInterval(interval)
+  }, [notes])
+
   async function fetchNotes() {
     const res = await fetch('/api/notes')
     const data = await res.json()
@@ -120,8 +128,8 @@ export default function NotesPage() {
                       Analyzed
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-500 bg-gray-700 px-1.5 py-0.5 rounded">
-                      Not analyzed
+                    <span className="text-xs text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded">
+                      Analyzing...
                     </span>
                   )}
                 </div>
