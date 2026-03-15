@@ -10,7 +10,7 @@ out/
 *.db-journal
 
 # Uploads
-uploads/
+/uploads/
 
 # Environment
 .env
