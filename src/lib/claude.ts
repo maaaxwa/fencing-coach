@@ -78,7 +78,8 @@ Return ONLY valid JSON (no markdown, no explanation) with exactly this structure
   })
 
   const text = response.content[0].type === 'text' ? response.content[0].text : ''
-  return JSON.parse(text) as NoteAnalysis
+  const cleaned = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  return JSON.parse(cleaned) as NoteAnalysis
 }
 
 export async function analyzeVideoFrames(
@@ -149,7 +150,8 @@ Analyze the frames for technique and performance. Return ONLY valid JSON (no mar
   })
 
   const text = response.content[0].type === 'text' ? response.content[0].text : ''
-  return JSON.parse(text) as VideoAnalysis
+  const cleaned = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  return JSON.parse(cleaned) as VideoAnalysis
 }
 
 export async function generateCoachingReport(
@@ -205,5 +207,6 @@ Cross-reference the training notes and video analyses to identify patterns, recu
   })
 
   const text = response.content[0].type === 'text' ? response.content[0].text : ''
-  return JSON.parse(text) as CoachingReportContent
+  const cleaned = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+  return JSON.parse(cleaned) as CoachingReportContent
 }
