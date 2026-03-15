@@ -83,7 +83,8 @@ Return ONLY valid JSON (no markdown, no explanation) with exactly this structure
 
 export async function analyzeVideoFrames(
   profile: ProfileContext,
-  base64Frames: string[]
+  base64Frames: string[],
+  fencerDescription?: string | null
 ): Promise<VideoAnalysis> {
   const exp = experienceLabel(profile.experienceYears, profile.experienceMonths)
 
@@ -109,7 +110,7 @@ export async function analyzeVideoFrames(
           ...imageContent,
           {
             type: 'text',
-            text: `You are an expert épée fencing coach. These are sequential frames from a single fencing point (bout moment). The fencer is ${profile.name} with ${exp} of épée experience.
+            text: `You are an expert épée fencing coach. These are sequential frames from a single fencing point (bout moment). The fencer being analyzed is ${profile.name} with ${exp} of épée experience.${fencerDescription ? ` ${profile.name} is the fencer on the ${fencerDescription} of the frame — focus your analysis exclusively on that fencer.` : ''}
 
 Épée context: whole body is a valid target, no right-of-way rules apply, simultaneous touches score both fencers.
 

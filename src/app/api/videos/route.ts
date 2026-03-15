@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData()
   const file = formData.get('video') as File
   const boutDate = formData.get('boutDate') as string
+  const fencerDescription = formData.get('fencerDescription') as string | null
 
   if (!file) return NextResponse.json({ error: 'No video file provided' }, { status: 400 })
   if (!boutDate) return NextResponse.json({ error: 'boutDate required' }, { status: 400 })
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
       filename,
       filepath,
       boutDate: new Date(boutDate),
+      fencerDescription: fencerDescription || null,
     },
   })
 

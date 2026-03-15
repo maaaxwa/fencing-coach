@@ -8,6 +8,7 @@ interface Video {
   id: number
   filename: string
   boutDate: string
+  fencerDescription: string | null
   analysis: string | null
   thumbnailPath: string | null
   createdAt: string
@@ -17,6 +18,8 @@ export default function VideosPage() {
   const [videos, setVideos] = useState<Video[]>([])
   const [showForm, setShowForm] = useState(false)
   const [boutDate, setBoutDate] = useState(format(new Date(), 'yyyy-MM-dd'))
+  const [fencerSide, setFencerSide] = useState<'left' | 'right'>('left')
+  const [fencerNote, setFencerNote] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -38,14 +41,21 @@ export default function VideosPage() {
     setUploading(true)
     setUploadProgress('Uploading video...')
 
+    const fencerDescription = fencerNote.trim()
+      ? `${fencerSide} side — ${fencerNote.trim()}`
+      : `${fencerSide} side`
+
     const formData = new FormData()
     formData.append('video', file)
     formData.append('boutDate', boutDate)
+    formData.append('fencerDescription', fencerDescription)
 
     const res = await fetch('/api/videos', { method: 'POST', body: formData })
     if (res.ok) {
       setShowForm(false)
       setBoutDate(format(new Date(), 'yyyy-MM-dd'))
+      setFencerSide('left')
+      setFencerNote('')
       if (fileInputRef.current) fileInputRef.current.value = ''
       fetchVideos()
     } else {
@@ -86,6 +96,32 @@ export default function VideosPage() {
               onChange={(e) => setBoutDate(e.target.value)}
               required
               className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">Which fencer are you?</label>
+            <div className="flex gap-3 mb-2">
+              {(['left', 'right'] as const).map((side) => (
+                <button
+                  key={side}
+                  type="button"
+                  onClick={() => setFencerSide(side)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                    fencerSide === side
+                      ? 'bg-blue-600 border-blue-500 text-white'
+                      : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500'
+                  }`}
+                >
+                  {side === 'left' ? '← Left side' : 'Right side →'}
+                </button>
+              ))}
+            </div>
+            <input
+              type="text"
+              value={fencerNote}
+              onChange={(e) => setFencerNote(e.target.value)}
+              placeholder="Optional: e.g. red jacket, taller fencer"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>

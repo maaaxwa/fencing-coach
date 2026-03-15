@@ -26,13 +26,14 @@ model ClassNote {
 }
 
 model Video {
-  id            Int      @id @default(autoincrement())
-  filename      String
-  filepath      String
-  boutDate      DateTime
-  analysis      String?
-  thumbnailPath String?
-  createdAt     DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  filename           String
+  filepath           String
+  boutDate           DateTime
+  fencerDescription  String?
+  analysis           String?
+  thumbnailPath      String?
+  createdAt          DateTime @default(now())
 }
 
 model CoachingReport {

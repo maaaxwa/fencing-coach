@@ -28,7 +28,8 @@ export async function POST(
       experienceYears: profile.experienceYears,
       experienceMonths: profile.experienceMonths,
     },
-    base64Frames
+    base64Frames,
+    video.fencerDescription
   )
 
   // Clean up frames after analysis to save disk space

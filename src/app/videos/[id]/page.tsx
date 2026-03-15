@@ -9,6 +9,7 @@ interface Video {
   id: number
   filename: string
   boutDate: string
+  fencerDescription: string | null
   analysis: string | null
   thumbnailPath: string | null
   createdAt: string
@@ -85,6 +86,11 @@ export default function VideoDetailPage() {
           <p className="text-gray-500 text-sm mt-0.5">
             Uploaded {format(new Date(video.createdAt), 'MMM d, yyyy')}
           </p>
+          {video.fencerDescription && (
+            <p className="text-gray-400 text-sm mt-1">
+              You are: <span className="text-blue-400">{video.fencerDescription}</span>
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-3">
           {analysis && (
